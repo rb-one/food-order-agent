@@ -4,9 +4,9 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./docker/Dockerfile
     volumes:
-      - ./app:/src/app  # Bind the app directory for hot reloading
+      - ./app:/src/app # Bind the app directory for hot reloading
     ports:
       - "8000:8000"
     environment:
@@ -17,20 +17,18 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: mysql_db
     restart: always
     environment:
-      MYSQL_ROOT_USER: root
-      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: app_db
+      MYSQL_ROOT_PASSWORD: password
       MYSQL_USER: user
       MYSQL_PASSWORD: user_password
     ports:
       - "3306:3306"
-    command: --init-file /data/application/init.sql
     volumes:
-      - db_data:/var/lib/mysql  # Persistent data storage
-      - ./init.sql:/data/application/init.sql
-volumes:
-  db_data:
+      - db_app:/var/lib/mysql
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
 
+volumes:
+  db_app:
+    driver: local
